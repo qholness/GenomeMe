@@ -1,0 +1,40 @@
+{% block head %}
+<head>
+<title>{{ title }}</title>
+<link rel="stylesheet" type="text/css" href="/static/css/base.css">
+<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" />
+</head>
+{% endblock %}
+
+{% block body %}
+    <script src="/static/js/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <!--Datatables-->
+    <script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    {% block navbar %}
+        <nav id=navbar>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/search">Search</a></li>
+                {% if session.get('data') %}
+                    <li><a href="{{ url_for('results') }}">Data</a></li>
+                {% endif %}
+                {% if session %}
+                    <li><a href="/clear">Clear Data</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endblock %}
+    {% block main %}
+    {% endblock %}
+{% endblock %}
+
+{% block scripts %}
+    <!--ReactJS requirements-->
+    <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+    <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+
+    <!--JQuery-->
+    
+{% endblock %}
