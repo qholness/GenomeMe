@@ -14,7 +14,7 @@
         <option value="{{ m }}">{{ m }}</option>
     {% endfor %}
 </select>
-
+<button onclick="reset(); changeColor();">Reset</button>
 <div id='barChart' height="720px" width="100%">
     <h3>Type Overview</h3>
 </div>
@@ -130,17 +130,14 @@
                     return d * 10;
                 })
                 .attr("fill", function(d, i) {
-                    
+                    if (currentMutation === '0') {
+                        return "rgba(0,150,0,1)";
+                    }
                     return "rgba("
                     + 0 + ","
-                    + (data[i]['mutation']==currentMutation? 
-                        150 : 50)
-                    + ","
-                    + (data[i]['chromosome']==currentChromosome?
-                        150 : 0)
-                    + ","
-                    + ((data[i]['mutation']==currentMutation || data[i]['chromosome']==currentChromosome)?
-                        1 : .2 )
+                    + 150 + ","
+                    + 0 + ","
+                    + (countsKeys[i] ===currentMutation? 1 : .2 )
                     + ")"
                 });
 
@@ -149,17 +146,25 @@
                 .transition()
                 .duration(2000)
                 .attr("fill", function(d, i) {
-                    return "rgba("
-                    + 0 + ","
-                    + (data[i]['mutation']==currentMutation? 
-                        150 : 50)
-                    + ","
-                    + (data[i]['chromosome']==currentChromosome?
-                        150 : 0)
-                    + ","
-                    + ((data[i]['mutation']==currentMutation || data[i]['chromosome']==currentChromosome)?
-                        1 : .2 )
-                    + ")"
+                    if (currentMutation === '0') {
+                        if (currentChromosome === '0') {
+                            return "rgba(0,150,150,1)";
+                        }
+                        return "rgba(0,150,0,1)";
+                    }
+                    else{
+                        return "rgba("
+                        + 0 + ","
+                        + (data[i]['mutation']==currentMutation? 
+                            150 : 50)
+                        + ","
+                        + (data[i]['chromosome']==currentChromosome?
+                            150 : 0)
+                        + ","
+                        + ((data[i]['mutation']==currentMutation || data[i]['chromosome']==currentChromosome)?
+                            1 : .2 )
+                        + ")"
+                    }
                 })
                 .attr("width", function(d, i) {
                     var size = 5;
@@ -221,5 +226,11 @@
     $(document).ready(function (){
         $("#dtable").DataTable();
     });
+</script>
+<script>
+    var reset = function() {
+        document.getElementById('mutation').value = 0;
+        document.getElementById('chromosome').value = 0;
+    }
 </script>
 {% endblock %}
