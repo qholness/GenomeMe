@@ -3,9 +3,9 @@
 <!--D3.js requirements-->
 
 
-<div id='results'>
-    <!--<svg id="bar" width="100%" height="360" fontFamily="sans-serif" textAnchor="middle"></svg>-->
+<div id='results' height="720px" width="100%">
 </div>
+<br />
 <table id="dtable" class="table">
     <thead id='theader'>
     </thead>
@@ -13,38 +13,70 @@
     </tbody>
 </table>
 <!--<script type="text/jsx" src="/static/js/results.jsx"></script>-->
-
+<script type="text/javascript">
+    function NormalizeTheData(data) {
+        //  Get sdev
+        var sdev = 0,
+            total = 0;
+            for (var i = 0; i < data.length; i++) {
+                total += data[i]
+            }
+            for (var i = 0; i < data.length; i++) {
+                sdev += Math.pow(data[i] - total/data.length, 2);
+            }
+        
+        // Set standard dev
+        sdev = Math.sqrt(sdev/(data.length));
+        
+        for (var i = 0; i < data.length; i++) {
+            // Normalize w/l data
+            var temp = (data[i] - total/data.length)/sdev;
+            data[i] = Math.abs(temp);
+        }
+        return data;
+    }
+</script>
 <script>
     var data = {{ session['data']['hits']|safe }};
     var counts = Object.values({{ count_by_type.to_json()|safe }});
+    // counts = NormalizeTheData(counts)
     var countsKeys = Object.keys({{ count_by_type.to_json()|safe }});
-    var height = 100, width=200, barPadding = 2;
-    var barGraph = d3.select("#results")
-                     .append("svg")
-                     .attr("width", width)
-                     .attr('height', height);
+    var colors = ["rgb(255, 0, 0", "rgb(0,255,0", "rgb(0,0,255"];
+    var results_div = document.getElementById("results")
+    var height = 100
+        ,width=200;
 
-    barGraph.selectAll("rect")
+    var circles = d3.select("#results")
+                     .append("svg")
+                     .attr("width", "100%")
+                     .attr('height', "480px");
+
+    circles.selectAll("circle")
             .data(counts)
             .enter()
-            .append("rect")
-            .attr("x", function(d, i) {
-                return i * (width/counts.length);
+            .append("circle")
+            .attr("cx", function(d, i) {
+                return (i+1) * 100;
             })
-            .attr("y", function(d) {
-                return height - d*10;
+            .attr("cy", function(d) {
+                console.log(height - d)
+                return "240px";
             })
-            .attr("width", width/counts.length - barPadding)
-            .attr("height", height)
+            // .attr("width", width/counts.length - barPadding)
+            // .attr("height", height)
+            .attr("r", function(d) {
+                return d;
+            })
             .attr("fill", function(d, i) {
-                return "rgb(255,0,0)"
-            });
-    barGraph.selectAll("text")
-            .data(countsKeys)
-            .enter()
-            .append("text")
+                return colors[i];
+            })
+            .on("mouseover", function() {
+                // d3.select(this).moveToFront();
+            })
+            .append("title")
             .text(function(d,i) {
-                return d.slice(0, 5);
+                return countsKeys[i]
+                    + "\nCount : " + d;
             })
             .attr("x", function(d, i) {
                 return i * (width/counts.length);
@@ -52,15 +84,15 @@
             .attr("y", function(d) {
                 return height - height/2;
             })
-            // .attr("rotate", -90 )
             ;
-
-
-    
-
-    console.log(counts, countsKeys);
-    
-
+    // circles.selectAll("text")
+    //         .data(countsKeys)
+    //         .enter()
+    //         .append("text")
+    //         // .attr("rotate", -90 )
+    //         ;
+</script>
+<script type="text/javascript">
     // Build Datatable
     var datakeys = Object.keys(data[0]);
     var header = document.getElementById("theader");
