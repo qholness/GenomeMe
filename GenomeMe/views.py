@@ -30,7 +30,7 @@ def fetch(r=None):
     if reqstring:
 
         flash("Request was: {}".format(reqstring))
-        response = request.get(reqstring)
+        response = requests.get(reqstring)
 
     else:
 
@@ -40,14 +40,13 @@ def fetch(r=None):
         nsize = flask_request.form.get('nsize')
 
         if endpoint:
-
-            url += endpoint
+    
 
             if fields:
                 trim_white_space = lambda s: s.lstrip().rstrip() # Just in case
                 fields = ",".join(list(map(trim_white_space, fields.split(","))))
 
-                url += "?field=" + fields + "&" + "size=" + (nsize if nsize else 100)
+                url += endpoint + "?field=" + fields + "&" + "size=" + (nsize if nsize else 100)
 
                 flash("Request was: {}".format(url))
                 response = requests.get(url)
@@ -59,14 +58,14 @@ def fetch(r=None):
         else:
             flash("No endpoint specified")
             return redirect(url_for('search'))
-    
+
     # Successful API call
     if response.status_code == 200:
 
         session['data'] = response.json()
 
         return redirect(url_for('results'))
-    
+
     flash("Request status code: {}".format(response.status_code))
 
     session['data'] = None
@@ -82,12 +81,16 @@ def results():
     data = session.get('data')
 
     if data:
-        
+
         pd_data = pd.DataFrame(data['hits'])
-        
-        count_by_type = pd_data['type'].value_counts()
-        
-        return render_template('results.html', title='Search Results', count_by_type=count_by_type)
+
+        count_by_type = pd_data['mutation'].value_counts()
+        mutations = sorted(list(pd_data['mutation'].unique()))
+        chromosomes = sorted(list(pd_data['chromosome'].unique()))
+
+        return render_template('results.html', title='Search Results', 
+            count_by_type=count_by_type,
+            mutations=mutations, chromosomes=chromosomes)
 
     return redirect(url_for('search'))
 

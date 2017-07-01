@@ -3,7 +3,7 @@ var SearchField = React.createClass({
         return {nsize : 100, 
                 fields : null,
                 endpoint : null,
-                reqstring : null};
+                reqstring : "https://dcc.icgc.org/api/v1/projects/GBM-US/mutations?field=id,mutation,type,chromosome,start,end&size=100&order=desc"};
     },
     updateFields: function(event) {
         this.setState({fields : event.target.value});
